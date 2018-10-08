@@ -1,15 +1,13 @@
 body {
 	text-align: center;
 	font-family: "Helvetica Neue", sans-serif;
-	font-size: 16px;
+	font-size: 25px;
 	color: 000000;
 	margin: 100px;
+	background-color: #E0F7FA;
 }
 
 h1 {
-	font-size: 50px;
+	font-size: 60px;
 }
 
-div.lyrics {
-	font-size: 25px;
-}
