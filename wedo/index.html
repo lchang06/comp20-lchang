@@ -14,13 +14,71 @@
 	<div id="lyrics"></div>
 
 	<script>
-	// Keep track of Wedo video time by keeping updating audio time position
-	    var audio=document.getElementById("wedo");
-    	audio.ontimeupdate = function() {audioTime()};
 
-    	function audioTime() {
-    		document.getElementById("wedo").innerHTML = audio.currentTime;
-		}
+		// Establish main variables
+	    var video = document.getElementById("wedo");
+	    var lyrics = document.getElementById("lyrics");
+
+
+		// Vido timer
+    	video.ontimeupdate = function() {
+
+    		video.innerHTML = video.currentTime;
+
+    		if (video.innerHTML >= 3 && video.innerHTML < 5.5) {
+    			lyrics.innerHTML = "Who controls the British crown?";
+    		}
+
+    		else if (video.innerHTML >= 5.5 && video.innerHTML < 8) {
+    			lyrics.innerHTML = "Who keeps the metric system down?";
+    		}
+
+    		else if (video.innerHTML >= 8 && video.innerHTML < 11.7) {
+    			lyrics.innerHTML = "We do, we do!";
+    		}
+
+    		else if (video.innerHTML >= 11.7 && video.innerHTML < 14) {
+    			lyrics.innerHTML = "Who keeps Atlantis off the maps?";
+    		}
+
+    		else if (video.innerHTML >= 14 && video.innerHTML < 16.5) {
+    			lyrics.innerHTML = "Who keeps the Martians under wraps?";
+    		}
+
+    		else if (video.innerHTML >= 16.5 && video.innerHTML < 20) {
+    			lyrics.innerHTML = "We do, we do!";
+    		}
+
+    		else if (video.innerHTML >= 20 && video.innerHTML < 24.5) {
+    			lyrics.innerHTML = "Who holds back the electric car?";
+    		}
+
+    		else if (video.innerHTML >= 24.5 && video.innerHTML < 29) {
+    			lyrics.innerHTML = "Who makes Steve Guttenberg a star?";
+    		}
+
+    		else if (video.innerHTML >= 29 && video.innerHTML < 33) {
+    			lyrics.innerHTML = "We do, we do!";
+    		}
+
+			else if (video.innerHTML >= 33 && video.innerHTML < 35) {
+    			lyrics.innerHTML = "Who robs cavefish of their sight?";
+    		}
+
+			else if (video.innerHTML >= 35 && video.innerHTML < 37.5) {
+    			lyrics.innerHTML = "Who rigs every Oscar night?";
+    		}
+
+    		else if (video.innerHTML >= 37.5 && video.innerHTML < 41) {
+    			lyrics.innerHTML = "We do!";
+    		}
+
+    		else if (video.innerHTML >= 41 && video.innerHTML < 45) {
+    			lyrics.innerHTML = "We do!";
+    		}
+
+    	};
+
 	</script>
 </body>
 

@@ -9,3 +9,7 @@ body {
 h1 {
 	font-size: 50px;
 }
+
+div.lyrics {
+	font-size: 25px;
+}
