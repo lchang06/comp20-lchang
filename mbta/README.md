@@ -7,3 +7,9 @@ To understand how to place a marker
 
 https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
 to understand polylines
+
+https://icons8.com/icon/set/train/all
+train icon source
+
+https://pepsized.com/customize-your-google-map-markers/
+to understand how to populate all station markers on map

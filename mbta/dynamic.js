@@ -33,36 +33,77 @@ function initMap() {
 		handleLocationError(false, infoWindow, map.getCenter());
 		}
 
+	// All Station coordinates
+	var alewife = {lat: 42.395428, lng: -71.142483};
+	var davis = {lat: 42.39674, lng: -71.121815};
+	var porter = {lat: 42.3884, lng: -71.11914899999999};
+	var harvard = {lat: 42.373362, lng: -71.118956};
+	var central = {lat: 42.365486, lng: -71.103802};
+	var kendall = {lat: 42.36249079, lng:-71.08617653};
+	var charlesMGH = {lat: 42.361166, lng: -71.070628};
+	var park = {lat: 42.35639457, lng: -71.0624242};
+	var downtownCrossing = {lat: 42.355518, lng: -71.060225};
+	var south = {lat: 42.352271, lng: -71.05524200000001};
+	var broadway = {lat: 42.342622, lng: -71.056967};
+	var andrew = {lat: 42.330154, lng: -71.057655};
+	var jfkUmass = {lat: 42.320685, lng: -71.052391};
+	var savinHill = {lat: 42.31129, lng: -71.053331};
+	var fieldsCorner = {lat: 42.300093, lng: -71.061667};
+	var shawmut = {lat: 42.29312583, lng: -71.06573796000001};
+	var ashmont = {lat: 42.284652, lng: -71.06448899999999};
+	var northQuincy = {lat: 42.275275, lng: -71.029583};
+	var wollaston = {lat: 42.2665139, lng: -71.0203369};
+	var quincyCenter = {lat: 42.251809, lng: -71.005409};
+	var quincyAdams = {lat: 42.233391, lng: -71.007153};
+	var braintree = {lat: 42.2078543, lng: -71.0011385};
+
+// Draw Polyline
 	// Ashmont Redline Stations
-	var redLineAshmont = [
-		{lat: 42.395428, lng: -71.142483}, // Alewife
-		{lat: 42.39674, lng: -71.121815}, // Davis
-		{lat: 42.3884, lng: -71.11914899999999}, // Porter
-		{lat: 42.373362, lng: -71.118956}, // Harvard
-		{lat: 42.365486, lng: -71.103802}, // Central Square
-		{lat: 42.36249079, lng:-71.08617653}, // Kendall/MIT
-		{lat: 42.361166, lng: -71.070628}, // Charles/MGH
-		{lat: 42.35639457, lng: -71.0624242}, // Park
-		{lat: 42.355518, lng: -71.060225}, // Downtown Crossing
-        {lat: 42.352271, lng: -71.05524200000001}, // South
-        {lat: 42.342622, lng: -71.056967}, // Broadway
-        {lat: 42.330154, lng: -71.057655}, // Andrew
-        {lat: 42.320685, lng: -71.052391}, // JFK/UMASS
-        {lat: 42.31129, lng: -71.053331}, // Savin Hill
-        {lat: 42.300093, lng: -71.061667}, // Fields Corner
-        {lat: 42.29312583, lng: -71.06573796000001}, // Shawmut
-        {lat: 42.284652, lng: -71.06448899999999} // Ashmont
+	var redLineAshmont = [ 
+		alewife, 
+		davis, 
+		porter, 
+		harvard, 
+		central, 
+		kendall, 
+		charlesMGH, 
+		park, 
+		downtownCrossing, 
+		south, 
+		broadway,
+		andrew,
+		jfkUmass,
+		savinHill,
+		fieldsCorner,
+		shawmut,
+		ashmont
     ];
 
     // Braintree stations after fork
     var redLineBraintree = [
-    	{lat: 42.320685, lng: -71.052391}, // JFK/UMASS
-    	{lat: 42.275275, lng: -71.029583}, // North Quincy
-        {lat: 42.2665139, lng: -71.0203369}, // Wollaston
-        {lat: 42.251809, lng: -71.005409}, // Quincy Center
-        {lat: 42.233391, lng: -71.007153}, // Quincy Adams
-        {lat: 42.2078543, lng: -71.0011385} // Braintree
+    	jfkUmass,
+    	northQuincy,
+    	wollaston,
+    	quincyCenter,
+    	quincyAdams,
+    	braintree
     ];
+
+    redLineAshmont.forEach(function(station) {
+   		var station = new google.maps.Marker({
+    		position: station,
+    		map: map,
+    		icon: { url: "trainIcon.png"}
+    	})
+   	});
+
+   	redLineBraintree.forEach(function(station) {
+   		var station = new google.maps.Marker({
+    		position: station,
+    		map: map,
+    		icon: { url: "trainIcon.png"}
+    	})
+   	});
 
 	// Set linetype for both paths
   	var redLinePath1 = new google.maps.Polyline({
@@ -84,6 +125,7 @@ function initMap() {
     // Set paths on map
     redLinePath1.setMap(map);
     redLinePath2.setMap(map);
+
 
 	}
 
