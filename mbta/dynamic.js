@@ -90,8 +90,8 @@ function initMap() {
         nearestStationPath.setMap(map);
 
         // Display infowindow with closest station when clicked
-        var contentString = '<div>Nearest MBTA Redline Station: ' + nearestStation + '</div>'
-            + '<div>Located ' + smallestDist/1609.344 + ' miles away</div>';
+        var contentString = '<h1>Nearest MBTA Redline Station: ' + nearestStation + '</h1>'
+            + '<h2>Located ' + smallestDist/1609.344 + ' miles away</h2>';
         var infoWindow = new google.maps.InfoWindow({
           content: contentString
         });
@@ -149,23 +149,36 @@ function initMap() {
                 var theData = request.responseText;
                 schedule = JSON.parse(theData);
 
-                scheduleTimes += "<h2>Next Trains Arriving At: </h2><ul>"
+                scheduleTimes += "<h2>Arrival Times: </h2><ul>"
                 for (k = 0; k < schedule.data.length; k++) {
                     direction_id = schedule.data[k].attributes.direction_id;
                     if (direction_id == 0) {
-                        direction = "Southbound: ";
+                        direction = "Southbound (Ashmont/Braintree) ";
                     }
                     else if (direction_id == 1) {
-                        direction = "Northbound: ";
+                        direction = "Northbound (Alewife) ";
                     }
 
-                    scheduleTimes += "<li>" + direction + schedule.data[k].attributes.arrival_time + "</li>";
+                    if (schedule.data[k].attributes.arrival_time != null) {
+                        scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time.substring(11,19) 
+                        + " — " + direction + "</li>";
+                    }
                 }
                 scheduleTimes += "</ul>";
 
-                scheduleTimes += "<h2>Next Trains Departing At: </h2><ul>"
+                scheduleTimes += "<h2>Departure Times: </h2><ul>"
                 for (k = 0; k < schedule.data.length; k++) {
-                    scheduleTimes += "<li>" + direction + schedule.data[k].attributes.departure_time; + "</li>";
+                    direction_id = schedule.data[k].attributes.direction_id;
+                    if (direction_id == 0) {
+                        direction = "Southbound (Ashmont/Braintree)";
+                    }
+                    else if (direction_id == 1) {
+                        direction = "Northbound (Alewife)";
+                    }
+                    if (schedule.data[k].attributes.departure_time != null) {
+                        scheduleTimes += "<li>" + schedule.data[k].attributes.departure_time.substring(11,19) 
+                        + " — " + direction + "</li>";
+                    }
                 }
                 scheduleTimes += "</ul>";
                     var info = new google.maps.InfoWindow({ // have info window when station clicked
@@ -203,24 +216,38 @@ function initMap() {
                 var theData = request.responseText;
                 schedule = JSON.parse(theData);
 
-                scheduleTimes += "<h2>Next Trains Arriving At: </h2><ul>"
+                scheduleTimes += "<h2>Arrival Times: </h2><ul>"
                 for (k = 0; k < schedule.data.length; k++) {
 
                     direction_id = schedule.data[k].attributes.direction_id;
                     if (direction_id == 0) {
-                        direction = "Southbound: ";
+                        direction = "Southbound (Ashmont/Braintree)";
                     }
                     else if (direction_id == 1) {
-                        direction = "Northbound: ";
+                        direction = "Northbound (Alewife)";
                     }
 
-                    scheduleTimes += "<li>" + direction + schedule.data[k].attributes.arrival_time + "</li>";
+                    if (schedule.data[k].attributes.arrival_time != null) {
+                        scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time.substring(11,19) 
+                        + " — " + direction + "</li>";
+                    }
                 }
                 scheduleTimes += "</ul>";
 
-                scheduleTimes += "<h2>Next Trains Departing At: </h2><ul>"
+                scheduleTimes += "<h2>Departure Times: </h2><ul>"
                 for (k = 0; k < schedule.data.length; k++) {
-                    scheduleTimes += "<li>" + direction + schedule.data[k].attributes.departure_time; + "</li>";
+                    direction_id = schedule.data[k].attributes.direction_id;
+                    if (direction_id == 0) {
+                        direction = "Southbound (Ashmont/Braintree)";
+                    }
+                    else if (direction_id == 1) {
+                        direction = "Northbound (Alewife)";
+                    }
+
+                    if (schedule.data[k].attributes.departure_time != null) {
+                        scheduleTimes += "<li>" + schedule.data[k].attributes.departure_time.substring(11,19) 
+                        + " — " + direction + "</li>";
+                    }
                 }
                 scheduleTimes += "</ul>";
 
@@ -231,7 +258,7 @@ function initMap() {
                 station.addListener('click', function() {
                     info.open(map,station);
                 });
-        }
+            }
        }
        i++;
        m++;

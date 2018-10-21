@@ -1,4 +1,5 @@
-1. Everything has been correctly implemented according to the spec.
+1. Everything has been correctly implemented according to the spec, to my knowledge. If I had more time, I would have made my code cleaner and more modular.
+
 2. I did not collaborate on this assignment. I used the following sources to help me figure things out:
 	- https://developers.google.com/maps/documentation/javascript/examples/map-geolocation
 	to understand how to use geolocation and implement the Google Map on my page.
@@ -18,4 +19,4 @@
 	- https://stackoverflow.com/questions/43800719/google-maps-computedistancebetween-not-working
 	to understand how to link google geometry library in html
 
-3. This assignment took me ~15-20 hours to complete (I wasn't counting throughout...)
+3. This assignment took me ~20 hours to complete (but I wasn't counting throughout...)
