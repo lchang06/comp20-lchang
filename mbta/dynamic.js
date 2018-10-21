@@ -164,6 +164,7 @@ function initMap() {
             icon: { url: "trainIcon.png"}
         })
 
+        var scheduleTimes;
 
         // XML Request
         var URL = 'https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id=' + stop_idList[i];
@@ -174,27 +175,30 @@ function initMap() {
             if (request.readyState == 4 && request.status == 200){
                 var theData = request.responseText;
                 schedule = JSON.parse(theData);
-                console.log(schedule);
-                returnHTML = "<ul>";
-                for (k = 0; k < schedule.length; k++) {
-                        returnHTML += "<li>Arrival: " + schedule[k].arrival_time 
-                        + " Departure: " + messages[i].departure_time + "</li>";
+
+                    scheduleTimes = "<div>Next 10 Trains Arriving At: </div><ul>"
+                    for (k = 0; k < schedule.data.length; k++) {
+                        scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time; + "</li>;"
                     }
-                    returnHTML += "</ul>";
-                    document.getElementById("schedule").innerHTML =returnHTML;
+                    scheduleTimes += "</ul>";
+
+                    scheduleTimes += "<div>Next 10 Trains Departing At: </div><ul>"
+                    for (k = 0; k < schedule.data.length; k++) {
+                        scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time; + "</li>;"
+                    }
+                    scheduleTimes += "</ul>";
+
+                    var info = new google.maps.InfoWindow({ // have info window when station clicked
+                        content: scheduleTimes
+                    });
+
+                    station.addListener('click', function() {
+                        info.open(map,station);
+                    });
         }
        }
        i++;
        request.send();
-
-
-        var info = new google.maps.InfoWindow({ // have info window when station clicked
-            content: 'hi'
-        });
-
-        station.addListener('click', function() {
-            info.open(map,station);
-        });
     });
 
     redLineBraintree.forEach(function(station, info) {
