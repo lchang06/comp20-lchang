@@ -56,7 +56,7 @@ function initMap() {
 
     // Ashmont Redline Names
     var redLineAshmontNames = ['Alewife', 'Davis Square', 'Porter Square', 'Harvard Square', 'Central Square', 
-        'Kendall Square', 'Charles/MGH' , 'Park Station', 'Downtown Crossing', 'South Station', 'Broadway', 
+        'Kendall Square', 'Charles/MGH' , 'Park Street', 'Downtown Crossing', 'South Station', 'Broadway', 
         'Andrew', 'JFK UMass', 'Savin Hill', 'Fields Corner', 'Shawmut', 'Ashmont'
     ];
 
@@ -64,6 +64,10 @@ function initMap() {
     var redLineBraintreeNames = ['JFK UMass', 'North Quincy', 'Wollaston', 'Quincy Center', 'Quincy Adams', 'Braintree'
     ];
 
+    var stop_idList = ['place-alfcl', 'place-davis', 'place-portr', 'place-harsq', 'place-cntsq', 'place-knncl', 
+        'place-chmnl', 'place-pktrm', 'place-dwnxg', 'place-sstat', 'place-brdwy', 'place-andrw', 'place-jfk', 'place-shmnl',
+        'place-fldcr', 'place-smmnl', 'place-asmnl', 'place-nqncy', 'place-wlsta', 'place-qnctr', 'place-qamnl', 'place-brntn'
+    ];
 
     // Geolocation
     if (navigator.geolocation) {
@@ -140,8 +144,9 @@ function initMap() {
         // Browser doesn't support Geolocation
         handleLocationError(false, infoWindow, map.getCenter());
         }
+    
 
-    // Draw Polyline Through RedLine Stations
+    // Draw Polyline Through RedLine Stations, Make Clickable Markers With Info
     // Ashmont Redline Stations
     var redLineAshmont = [alewife, davis, porter, harvard, central, kendall, charlesMGH, park, 
         downtownCrossing, south, broadway, andrew, jfkUmass, savinHill, fieldsCorner, shawmut, ashmont
@@ -151,12 +156,37 @@ function initMap() {
     var redLineBraintree = [jfkUmass, northQuincy, wollaston, quincyCenter, quincyAdams, braintree
     ];
 
+    var i = 0;
     redLineAshmont.forEach(function(station, info) {
         var station = new google.maps.Marker({ // place marker on each station
             position: station,
             map: map,
             icon: { url: "trainIcon.png"}
         })
+
+
+        // XML Request
+        var URL = 'https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id=' + stop_idList[i];
+
+        var request = new XMLHttpRequest();
+        request.open("GET", URL, true );
+        request.onreadystatechange = function() {
+            if (request.readyState == 4 && request.status == 200){
+                var theData = request.responseText;
+                schedule = JSON.parse(theData);
+                console.log(schedule);
+                returnHTML = "<ul>";
+                for (k = 0; k < schedule.length; k++) {
+                        returnHTML += "<li>Arrival: " + schedule[k].arrival_time 
+                        + " Departure: " + messages[i].departure_time + "</li>";
+                    }
+                    returnHTML += "</ul>";
+                    document.getElementById("schedule").innerHTML =returnHTML;
+        }
+       }
+       i++;
+       request.send();
+
 
         var info = new google.maps.InfoWindow({ // have info window when station clicked
             content: 'hi'
@@ -171,7 +201,7 @@ function initMap() {
         var station = new google.maps.Marker({
             position: station,
             map: map,
-            icon: { url: "trainIcon.png"}
+            icon: {url: "trainIcon.png"}
         })
 
         var info = new google.maps.InfoWindow({
