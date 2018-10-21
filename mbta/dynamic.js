@@ -1,26 +1,3 @@
-/*  var alewife = {"lat": 42.395428, "lng": -71.142483};
-    var davis = {"lat": 42.39674, "lng": -71.121815};
-    var porter = {"lat": 42.3884, "lng": -71.11914899999999};
-    var harvard = {"lat": 42.373362, "lng": -71.118956};
-    var central = {"lat": 42.365486, "lng": -71.103802};
-    var kendall = {"lat": 42.36249079, "lng":-71.08617653};
-    var charlesMGH = {lat: 42.361166, lng: -71.070628};
-    var park = {lat: 42.35639457, lng: -71.0624242};
-    var downtownCrossing = {lat: 42.355518, lng: -71.060225};
-    var south = {lat: 42.352271, lng: -71.05524200000001};
-    var broadway = {lat: 42.342622, lng: -71.056967};
-    var andrew = {lat: 42.330154, lng: -71.057655};
-    var jfkUmass = {lat: 42.320685, lng: -71.052391};
-    var savinHill = {lat: 42.31129, lng: -71.053331};
-    var fieldsCorner = {lat: 42.300093, lng: -71.061667};
-    var shawmut = {lat: 42.29312583, lng: -71.06573796000001};
-    var ashmont = {lat: 42.284652, lng: -71.06448899999999};
-    var northQuincy = {lat: 42.275275, lng: -71.029583};
-    var wollaston = {lat: 42.2665139, lng: -71.0203369};
-    var quincyCenter = {lat: 42.251809, lng: -71.005409};
-    var quincyAdams = {lat: 42.233391, lng: -71.007153};
-    var braintree = {"lat": 42.2078543, "lng": -71.0011385};*/
-
 // initialize map with center on South Station
 function initMap() {
     var map = new google.maps.Map(document.getElementById('map'), {
@@ -66,7 +43,7 @@ function initMap() {
 
     var stop_idList = ['place-alfcl', 'place-davis', 'place-portr', 'place-harsq', 'place-cntsq', 'place-knncl', 
         'place-chmnl', 'place-pktrm', 'place-dwnxg', 'place-sstat', 'place-brdwy', 'place-andrw', 'place-jfk', 'place-shmnl',
-        'place-fldcr', 'place-smmnl', 'place-asmnl', 'place-nqncy', 'place-wlsta', 'place-qnctr', 'place-qamnl', 'place-brntn'
+        'place-fldcr', 'place-smmnl', 'place-asmnl', 'place-jfk', 'place-nqncy', 'place-wlsta', 'place-qnctr', 'place-qamnl', 'place-brntn'
     ];
 
     // Geolocation
@@ -161,10 +138,10 @@ function initMap() {
         var station = new google.maps.Marker({ // place marker on each station
             position: station,
             map: map,
-            icon: { url: "trainIcon.png"}
+            icon: {url: "trainIcon.png"}
         })
 
-        var scheduleTimes;
+        var scheduleTimes = "<h1>" + redLineAshmontNames[i] + "</h1>";
 
         // XML Request
         var URL = 'https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id=' + stop_idList[i];
@@ -176,15 +153,15 @@ function initMap() {
                 var theData = request.responseText;
                 schedule = JSON.parse(theData);
 
-                    scheduleTimes = "<div>Next 10 Trains Arriving At: </div><ul>"
+                    scheduleTimes += "<h2>Next Trains Arriving At: </h2><ul>"
                     for (k = 0; k < schedule.data.length; k++) {
-                        scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time; + "</li>;"
+                        scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time; + "</li>";
                     }
                     scheduleTimes += "</ul>";
 
-                    scheduleTimes += "<div>Next 10 Trains Departing At: </div><ul>"
+                    scheduleTimes += "<h2>Next Trains Departing At: </h2><ul>"
                     for (k = 0; k < schedule.data.length; k++) {
-                        scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time; + "</li>;"
+                        scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time; + "</li>";
                     }
                     scheduleTimes += "</ul>";
 
@@ -201,6 +178,7 @@ function initMap() {
        request.send();
     });
 
+    var m = 0;
     redLineBraintree.forEach(function(station, info) {
         var station = new google.maps.Marker({
             position: station,
@@ -208,13 +186,42 @@ function initMap() {
             icon: {url: "trainIcon.png"}
         })
 
-        var info = new google.maps.InfoWindow({
-            content: 'hi'
-        });
+        var scheduleTimes = "<h1>" + redLineBraintreeNames[m] + "</h1>";
 
-        station.addListener('click', function() {
-            info.open(map,station);
-        });
+         // XML Request
+        var URL = 'https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id=' + stop_idList[i];
+
+        var request = new XMLHttpRequest();
+        request.open("GET", URL, true );
+        request.onreadystatechange = function() {
+            if (request.readyState == 4 && request.status == 200){
+                var theData = request.responseText;
+                schedule = JSON.parse(theData);
+
+                scheduleTimes += "<h2>Next Trains Arriving At: </h2><ul>"
+                for (k = 0; k < schedule.data.length; k++) {
+                    scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time; + "</li>";
+                }
+                scheduleTimes += "</ul>";
+
+                scheduleTimes += "<h2>Next Trains Departing At: </h2><ul>"
+                for (k = 0; k < schedule.data.length; k++) {
+                    scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time; + "</li>";
+                }
+                scheduleTimes += "</ul>";
+
+                var info = new google.maps.InfoWindow({ // have info window when station clicked
+                    content: scheduleTimes
+                });
+
+                station.addListener('click', function() {
+                    info.open(map,station);
+                });
+        }
+       }
+       i++;
+       m++;
+       request.send();
     });
 
     // Set linetype for both paths
