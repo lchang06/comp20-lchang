@@ -36,11 +36,10 @@ function initMap() {
         'Kendall Square', 'Charles/MGH' , 'Park Street', 'Downtown Crossing', 'South Station', 'Broadway', 
         'Andrew', 'JFK UMass', 'Savin Hill', 'Fields Corner', 'Shawmut', 'Ashmont'
     ];
-
     // Braintree stations after fork
     var redLineBraintreeNames = ['JFK UMass', 'North Quincy', 'Wollaston', 'Quincy Center', 'Quincy Adams', 'Braintree'
     ];
-
+    // Stop_ID list
     var stop_idList = ['place-alfcl', 'place-davis', 'place-portr', 'place-harsq', 'place-cntsq', 'place-knncl', 
         'place-chmnl', 'place-pktrm', 'place-dwnxg', 'place-sstat', 'place-brdwy', 'place-andrw', 'place-jfk', 'place-shmnl',
         'place-fldcr', 'place-smmnl', 'place-asmnl', 'place-jfk', 'place-nqncy', 'place-wlsta', 'place-qnctr', 'place-qamnl', 'place-brntn'
@@ -52,13 +51,13 @@ function initMap() {
         
         // Get user's geolocation
         var pos = new google.maps.LatLng (parseFloat(position.coords.latitude), parseFloat(position.coords.longitude));
-
+        
         // Calculate smallest distance between position and stations
         var smallestDist = google.maps.geometry.spherical.computeDistanceBetween(alewife, pos); 
         var nearestStation = redLineAshmontNames[0];
         var count = 0;
         var nearestCoords = alewife;
-
+        // Check distance from user's position to each station on Ashmont line
         redLineAshmont.forEach(function(distance) {
             var distance = google.maps.geometry.spherical.computeDistanceBetween(distance, pos);
             if (distance < smallestDist) {
@@ -68,7 +67,7 @@ function initMap() {
             }
             count ++;
         });
-
+        // Check distance from user's position to each station on Braintree line
         count = 0;
         redLineBraintree.forEach(function(distance) {
             var distance = google.maps.geometry.spherical.computeDistanceBetween(distance, pos);
@@ -96,7 +95,6 @@ function initMap() {
         var infoWindow = new google.maps.InfoWindow({
           content: contentString
         });
-
         infoWindow.open(map); // open map
         map.setCenter(pos); // center map on user's location
 
@@ -106,7 +104,6 @@ function initMap() {
             map: map,
             title: 'You are here'
         });
-
         marker.addListener('click', function() {
           infoWindow.open(map, marker);
         });
@@ -128,7 +125,6 @@ function initMap() {
     var redLineAshmont = [alewife, davis, porter, harvard, central, kendall, charlesMGH, park, 
         downtownCrossing, south, broadway, andrew, jfkUmass, savinHill, fieldsCorner, shawmut, ashmont
     ];
-
     // Braintree stations after fork
     var redLineBraintree = [jfkUmass, northQuincy, wollaston, quincyCenter, quincyAdams, braintree
     ];
@@ -153,18 +149,25 @@ function initMap() {
                 var theData = request.responseText;
                 schedule = JSON.parse(theData);
 
-                    scheduleTimes += "<h2>Next Trains Arriving At: </h2><ul>"
-                    for (k = 0; k < schedule.data.length; k++) {
-                        scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time; + "</li>";
+                scheduleTimes += "<h2>Next Trains Arriving At: </h2><ul>"
+                for (k = 0; k < schedule.data.length; k++) {
+                    direction_id = schedule.data[k].attributes.direction_id;
+                    if (direction_id == 0) {
+                        direction = "Southbound: ";
                     }
-                    scheduleTimes += "</ul>";
-
-                    scheduleTimes += "<h2>Next Trains Departing At: </h2><ul>"
-                    for (k = 0; k < schedule.data.length; k++) {
-                        scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time; + "</li>";
+                    else if (direction_id == 1) {
+                        direction = "Northbound: ";
                     }
-                    scheduleTimes += "</ul>";
 
+                    scheduleTimes += "<li>" + direction + schedule.data[k].attributes.arrival_time + "</li>";
+                }
+                scheduleTimes += "</ul>";
+
+                scheduleTimes += "<h2>Next Trains Departing At: </h2><ul>"
+                for (k = 0; k < schedule.data.length; k++) {
+                    scheduleTimes += "<li>" + direction + schedule.data[k].attributes.departure_time; + "</li>";
+                }
+                scheduleTimes += "</ul>";
                     var info = new google.maps.InfoWindow({ // have info window when station clicked
                         content: scheduleTimes
                     });
@@ -187,6 +190,8 @@ function initMap() {
         })
 
         var scheduleTimes = "<h1>" + redLineBraintreeNames[m] + "</h1>";
+        var direction_id;
+        var direction;
 
          // XML Request
         var URL = 'https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id=' + stop_idList[i];
@@ -200,13 +205,22 @@ function initMap() {
 
                 scheduleTimes += "<h2>Next Trains Arriving At: </h2><ul>"
                 for (k = 0; k < schedule.data.length; k++) {
-                    scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time; + "</li>";
+
+                    direction_id = schedule.data[k].attributes.direction_id;
+                    if (direction_id == 0) {
+                        direction = "Southbound: ";
+                    }
+                    else if (direction_id == 1) {
+                        direction = "Northbound: ";
+                    }
+
+                    scheduleTimes += "<li>" + direction + schedule.data[k].attributes.arrival_time + "</li>";
                 }
                 scheduleTimes += "</ul>";
 
                 scheduleTimes += "<h2>Next Trains Departing At: </h2><ul>"
                 for (k = 0; k < schedule.data.length; k++) {
-                    scheduleTimes += "<li>" + schedule.data[k].attributes.arrival_time; + "</li>";
+                    scheduleTimes += "<li>" + direction + schedule.data[k].attributes.departure_time; + "</li>";
                 }
                 scheduleTimes += "</ul>";
 
@@ -232,7 +246,6 @@ function initMap() {
         strokeOpacity: 1.0,
         strokeWeight: 2.5
     });
-
     var redLinePath2 = new google.maps.Polyline({
     path: redLineBraintree,
     geodesic: true,
