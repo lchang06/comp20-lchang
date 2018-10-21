@@ -23,8 +23,8 @@
 
 // initialize map with center on South Station
 function initMap() {
-	var map = new google.maps.Map(document.getElementById('map'), {
-		center: {lat:42.351947, lng:-71.055086}, // center on South Station
+    var map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat:42.351947, lng:-71.055086}, // center on South Station
         zoom: 12 // reasonable zoom to see red line
     });
 
@@ -65,12 +65,12 @@ function initMap() {
     ];
 
 
-	// Geolocation
-	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(function(position) {
-		
-		// Get user's geolocation
-		var pos = new google.maps.LatLng (parseFloat(position.coords.latitude), parseFloat(position.coords.longitude));
+    // Geolocation
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+        
+        // Get user's geolocation
+        var pos = new google.maps.LatLng (parseFloat(position.coords.latitude), parseFloat(position.coords.longitude));
 
         // Calculate smallest distance between position and stations
         var smallestDist = google.maps.geometry.spherical.computeDistanceBetween(alewife, pos); 
@@ -78,26 +78,26 @@ function initMap() {
         var count = 0;
         var nearestCoords = alewife;
 
-    	redLineAshmont.forEach(function(distance) {
-    		var distance = google.maps.geometry.spherical.computeDistanceBetween(distance, pos);
-    		if (distance < smallestDist) {
-    			smallestDist = distance;
-    			nearestStation = redLineAshmontNames[count];
+        redLineAshmont.forEach(function(distance) {
+            var distance = google.maps.geometry.spherical.computeDistanceBetween(distance, pos);
+            if (distance < smallestDist) {
+                smallestDist = distance;
+                nearestStation = redLineAshmontNames[count];
                 nearestCoords = redLineAshmont[count];
-    		}
-    		count ++;
-    	});
+            }
+            count ++;
+        });
 
-    	count = 0;
-    	redLineBraintree.forEach(function(distance) {
-    		var distance = google.maps.geometry.spherical.computeDistanceBetween(distance, pos);
-    		if (distance < smallestDist) {
-    			smallestDist = distance;
-    			nearestStation = redLineBraintreeNames[count];
+        count = 0;
+        redLineBraintree.forEach(function(distance) {
+            var distance = google.maps.geometry.spherical.computeDistanceBetween(distance, pos);
+            if (distance < smallestDist) {
+                smallestDist = distance;
+                nearestStation = redLineBraintreeNames[count];
                 nearestCoords = redLineBraintree[count];
-    		}
-    		count++;
-    	});
+            }
+            count++;
+        });
 
         // Draw polyline to nearest station
         var nearestStationPath = new google.maps.Polyline({
@@ -109,10 +109,10 @@ function initMap() {
         });
         nearestStationPath.setMap(map);
 
-    	// Display infowindow with closest station when clicked
-    	var contentString = '<div>Nearest MBTA Redline Station: ' + nearestStation + '</div>'
-    		+ '<div>Located ' + smallestDist/1609.344 + ' miles away</div>';
-    	var infoWindow = new google.maps.InfoWindow({
+        // Display infowindow with closest station when clicked
+        var contentString = '<div>Nearest MBTA Redline Station: ' + nearestStation + '</div>'
+            + '<div>Located ' + smallestDist/1609.344 + ' miles away</div>';
+        var infoWindow = new google.maps.InfoWindow({
           content: contentString
         });
 
@@ -121,9 +121,9 @@ function initMap() {
 
         // Put marker on user's location
         var marker = new google.maps.Marker({ 
-        	position: pos,
-        	map: map,
-        	title: 'You are here'
+            position: pos,
+            map: map,
+            title: 'You are here'
         });
 
         marker.addListener('click', function() {
@@ -131,44 +131,60 @@ function initMap() {
         });
 
 
-    	}, function() { // Location found
-    		handleLocationError(true, infoWindow, map.getCenter());
-    	});
+        }, function() { // Location found
+            handleLocationError(true, infoWindow, map.getCenter());
+        });
 
 
-	} else { // Location not found
-		// Browser doesn't support Geolocation
-		handleLocationError(false, infoWindow, map.getCenter());
-		}
+    } else { // Location not found
+        // Browser doesn't support Geolocation
+        handleLocationError(false, infoWindow, map.getCenter());
+        }
 
     // Draw Polyline Through RedLine Stations
-	// Ashmont Redline Stations
-	var redLineAshmont = [alewife, davis, porter, harvard, central, kendall, charlesMGH, park, 
-		downtownCrossing, south, broadway, andrew, jfkUmass, savinHill, fieldsCorner, shawmut, ashmont
+    // Ashmont Redline Stations
+    var redLineAshmont = [alewife, davis, porter, harvard, central, kendall, charlesMGH, park, 
+        downtownCrossing, south, broadway, andrew, jfkUmass, savinHill, fieldsCorner, shawmut, ashmont
     ];
 
     // Braintree stations after fork
     var redLineBraintree = [jfkUmass, northQuincy, wollaston, quincyCenter, quincyAdams, braintree
     ];
 
-    redLineAshmont.forEach(function(station) {
-   		var station = new google.maps.Marker({
-    		position: station,
-    		map: map,
-    		icon: { url: "trainIcon.png"}
-    	})
-   	});
+    redLineAshmont.forEach(function(station, info) {
+        var station = new google.maps.Marker({ // place marker on each station
+            position: station,
+            map: map,
+            icon: { url: "trainIcon.png"}
+        })
 
-   	redLineBraintree.forEach(function(station) {
-   		var station = new google.maps.Marker({
-    		position: station,
-    		map: map,
-    		icon: { url: "trainIcon.png"}
-    	})
-   	});
+        var info = new google.maps.InfoWindow({ // have info window when station clicked
+            content: 'hi'
+        });
 
-	// Set linetype for both paths
-  	var redLinePath1 = new google.maps.Polyline({
+        station.addListener('click', function() {
+            info.open(map,station);
+        });
+    });
+
+    redLineBraintree.forEach(function(station, info) {
+        var station = new google.maps.Marker({
+            position: station,
+            map: map,
+            icon: { url: "trainIcon.png"}
+        })
+
+        var info = new google.maps.InfoWindow({
+            content: 'hi'
+        });
+
+        station.addListener('click', function() {
+            info.open(map,station);
+        });
+    });
+
+    // Set linetype for both paths
+    var redLinePath1 = new google.maps.Polyline({
         path: redLineAshmont,
         geodesic: true,
         strokeColor: '#FF0000',
@@ -188,9 +204,9 @@ function initMap() {
     redLinePath1.setMap(map);
     redLinePath2.setMap(map);
 
-	// Catch for errors, notify user if location not found
+    // Catch for errors, notify user if location not found
     function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-    	infoWindow.setPosition(pos);
+        infoWindow.setPosition(pos);
         infoWindow.setContent(browserHasGeolocation ?
                               'Error: The Geolocation service failed.' :
                               'Error: Your browser doesn\'t support geolocation.');
