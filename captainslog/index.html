@@ -12,30 +12,28 @@
     $(document).ready(function(){
 
         var input = "";
-        var count = 0;
         var value = "";
         var output = "";
+
+        for (var i = 0; i < localStorage.length; i++)
+        {
+            $('div').prepend(localStorage.getItem(localStorage.key(i)) + '<br/>');
+        }
 
        $(document).keypress(function(enter) {
         var key = enter.which; // save stuff when enter key is pressed
         if (key == 13) 
         {
-            var date = new Date();
-           // date = date.toString();
+            var date = new Date(); // get date
+            input = $('#msg').val(); // get user input
 
-            input = $('#msg').val();
-           // input = input.toString();
-
-            value = date + " - " + input;
+            value = date + " - " + input; 
             value = value.toString();
 
-            localStorage.setItem(count,value);
-
-            $('div').prepend(localStorage.getItem(count) + '<br />');
+            localStorage.setItem(date,value);
+            $('div').prepend(localStorage.getItem(date) + '<br/>');
 
             count ++;
-
-           
         };
 
        });
