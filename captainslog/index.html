@@ -9,26 +9,39 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
 
-        count = 0;
+    $(document).ready(function(){
+
+        var input = "";
+        var count = 0;
+        var value = "";
+        var output = "";
+
        $(document).keypress(function(enter) {
         var key = enter.which; // save stuff when enter key is pressed
         if (key == 13) 
         {
-            console.log('enter key pressed: ' + count);
             var date = new Date();
-            input = $('#msg').val();
-            localStorage.setItem(date, input); 
-            console.log(date + " - " + input);
+           // date = date.toString();
 
-            count++;
+            input = $('#msg').val();
+           // input = input.toString();
+
+            value = date + " - " + input;
+            value = value.toString();
+
+            localStorage.setItem(count,value);
+
+            $('div').prepend(localStorage.getItem(count) + '<br />');
+
+            count ++;
+
+           
         };
 
-
-
-
-            //var input = localStorage.setItem('input', document.getElementById('log').value);
-            //console.log(date + " - ");
        });
+
+
+    });
     </script>
 </head>
 
