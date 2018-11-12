@@ -17,25 +17,35 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 function postScores() {
       // make instance of XHR object post
       var request = new XMLHttpRequest();
-      console.log("readyState: new " + request.readyState);
       // open 
       request.open("POST","https://stormy-crag-36673.herokuapp.com/submit", true);
-      console.log("readyState: open " + request.readyState);
       // set callback function
-      request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-      console.log("readyState: request header " + request.readyState);
+      request.setRequestHeader("Content-Type", "application-json"); //X-Requested-With, XMLHttpRequest
 
       request.onreadystatechange = function() {
-        console.log("readyState: readystatechange " + request.readyState);
         if (request.readyState == 4 && request.status == 200) {
-          console.log("readyState: done " + request.readyState);
           // Request finished.
       }
     }
 
     // fire off http request
-      request.send(scoreDocument);
-      console.log("readyState: send? " + request.readyState);
+      request.send(scoreDocumentStr);
+  }
+
+  function getScores() {
+    var request = new XMLHttpRequest();
+    request.open("GET", "https://stormy-crag-36673.herokuapp.com/submit", true);
+    request.onreadystatechange = function() {
+      if (request.readyState == 4 && request.status == 200) {
+          var theData = request.responseText;
+          var playerData = JSON.parse(theData);
+        //do stuff
+        // return array of objects for a specified player with scores sorted in descending order
+        // query string is username
+        // if username is empty, return json empty array []
+      }
+      request.send();
+    }
   }
 
 // Restart the game
@@ -172,14 +182,20 @@ GameManager.prototype.move = function (direction) {
     }
     gridDoc += "]";
 
+    var date = new Date();
     // Create string to send in HTTP POST
-    scoreDocument = "username=" + username + "&score=" + this.score + "&grid=" + gridDoc;
-    
+    scoreDocument = {
+      "username": username,
+      "score": this.score,
+      "grid": gridDoc,
+      "created_at": date
+    };
+    scoreDocumentStr = JSON.stringify(scoreDocument);
+    console.log(scoreDocumentStr);
     // Call postScores function
     postScores();
-
-
-    // function getScores()
+    // Call getScores function
+    getScores()
   }
 
   var cell, tile;
