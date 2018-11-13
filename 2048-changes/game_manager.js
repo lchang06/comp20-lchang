@@ -14,7 +14,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 }
 
 // Changes!!!
-function postScores() {
+/*function postScores() {
       // make instance of XHR object post
       var request = new XMLHttpRequest();
       // open 
@@ -31,6 +31,7 @@ function postScores() {
     // fire off http request
       request.send(scoreDocumentStr);
   }
+  */
 
   function getScores() {
     var request = new XMLHttpRequest();
@@ -172,33 +173,49 @@ GameManager.prototype.move = function (direction) {
 
     // Ask for username, hardcode as "Anonymous" by default
     username = prompt("Please enter your username", "Anonymous");
-    
+
     // Save the grid
-    var gridDoc = "size:" + this.size + ",cells:[";
+    //var gridDoc = "size:" + this.size + "&cells:[";
+
+    var cells = "[";
+    //var gridDoc = "size:" + this.size + ",cells:[";
     for (var x = 0; x < this.size; x++) {
+      cells += "[";
      for (var y = 0; y < this.size; y++) {
-        gridDoc += JSON.stringify(this.grid.cellContent({ x: x, y: y }));
+        cells += JSON.stringify(this.grid.cellContent({ x: x, y: y }));
+        if (y != this.size - 1) {
+          cells += ",";
+        }
       }
+      cells += "]";
     }
-    gridDoc += "]";
+    cells += "]";
+    //gridDoc += "]";
+    var gridDoc = {
+      "size": this.size,
+      "cells": cells
+    };
 
     var date = new Date();
     // Create string to send in HTTP POST
-    scoreDocument = {
+   scoreDocument = {
       "username": username,
       "score": this.score,
       "grid": gridDoc,
       "created_at": date
     };
-    scoreDocumentStr = JSON.stringify(scoreDocument);
-    console.log(scoreDocumentStr);
+
+    $.post("https://stormy-crag-36673.herokuapp.com/submit",scoreDocument);
+    //scoreDocument = "username:" + username + "&score=" + this.score + "&grid=" + gridDoc + "&created_at" + date;
+    //scoreDocumentStr = JSON.stringify(scoreDocument);
+    //console.log(scoreDocumentStr);
     // Call postScores function
-    postScores();
+    //postScores();
     // Call getScores function
     getScores()
   }
-
   var cell, tile;
+
 
   var vector     = this.getVector(direction);
   var traversals = this.buildTraversals(vector);
