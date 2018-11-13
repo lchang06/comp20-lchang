@@ -13,26 +13,6 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.setup();
 }
 
-// Changes!!!
-/*function postScores() {
-      // make instance of XHR object post
-      var request = new XMLHttpRequest();
-      // open 
-      request.open("POST","https://stormy-crag-36673.herokuapp.com/submit", true);
-      // set callback function
-      request.setRequestHeader("Content-Type", "application-json"); //X-Requested-With, XMLHttpRequest
-
-      request.onreadystatechange = function() {
-        if (request.readyState == 4 && request.status == 200) {
-          // Request finished.
-      }
-    }
-
-    // fire off http request
-      request.send(scoreDocumentStr);
-  }
-  */
-
   function getScores() {
     var request = new XMLHttpRequest();
     request.open("GET", "https://stormy-crag-36673.herokuapp.com/submit", true);
@@ -175,8 +155,6 @@ GameManager.prototype.move = function (direction) {
     username = prompt("Please enter your username", "Anonymous");
 
     // Save the grid
-    //var gridDoc = "size:" + this.size + "&cells:[";
-
     var cells = "[";
     //var gridDoc = "size:" + this.size + ",cells:[";
     for (var x = 0; x < this.size; x++) {
@@ -188,6 +166,9 @@ GameManager.prototype.move = function (direction) {
         }
       }
       cells += "]";
+      if (x != this.size - 1) {
+        cells += ",";
+      }
     }
     cells += "]";
     //gridDoc += "]";
@@ -195,24 +176,21 @@ GameManager.prototype.move = function (direction) {
       "size": this.size,
       "cells": cells
     };
-
     var date = new Date();
+    
     // Create string to send in HTTP POST
-   scoreDocument = {
+    scoreDocument = {
       "username": username,
       "score": this.score,
       "grid": gridDoc,
       "created_at": date
     };
 
-    $.post("https://stormy-crag-36673.herokuapp.com/submit",scoreDocument);
-    //scoreDocument = "username:" + username + "&score=" + this.score + "&grid=" + gridDoc + "&created_at" + date;
-    //scoreDocumentStr = JSON.stringify(scoreDocument);
-    //console.log(scoreDocumentStr);
-    // Call postScores function
-    //postScores();
-    // Call getScores function
-    getScores()
+    $.post("https://stormy-crag-36673.herokuapp.com/submit",scoreDocument, function(data) {
+      console.log(JSON.stringify(data));
+    });
+
+
   }
   var cell, tile;
 
