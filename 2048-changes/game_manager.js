@@ -13,7 +13,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.setup();
 }
 
-  function getScores() {
+  /*function getScores() {
     var request = new XMLHttpRequest();
     request.open("GET", "https://stormy-crag-36673.herokuapp.com/submit", true);
     request.onreadystatechange = function() {
@@ -27,7 +27,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
       }
       request.send();
     }
-  }
+  }*/
 
 // Restart the game
 GameManager.prototype.restart = function () {
@@ -183,12 +183,10 @@ GameManager.prototype.move = function (direction) {
       "username": username,
       "score": this.score,
       "grid": gridDoc,
-      "created_at": date
+      "created_at": date,
     };
 
-    $.post("https://stormy-crag-36673.herokuapp.com/submit",scoreDocument, function(data) {
-      console.log(JSON.stringify(data));
-    });
+    $.post("https://stormy-crag-36673.herokuapp.com/submit",scoreDocument);
 
 
   }
