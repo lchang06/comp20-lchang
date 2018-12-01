@@ -13,22 +13,6 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.setup();
 }
 
-  /*function getScores() {
-    var request = new XMLHttpRequest();
-    request.open("GET", "https://stormy-crag-36673.herokuapp.com/submit", true);
-    request.onreadystatechange = function() {
-      if (request.readyState == 4 && request.status == 200) {
-          var theData = request.responseText;
-          var playerData = JSON.parse(theData);
-        //do stuff
-        // return array of objects for a specified player with scores sorted in descending order
-        // query string is username
-        // if username is empty, return json empty array []
-      }
-      request.send();
-    }
-  }*/
-
 // Restart the game
 GameManager.prototype.restart = function () {
   this.storageManager.clearGameState();
