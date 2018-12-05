@@ -1,28 +1,122 @@
-Introduction - Provide a description of the product and what you were hired to do
+<!doctype html> <!-- HTML5-->
+<html lang="en">
 
+<head>
+	<title>Assignment 4</title>
+	<meta charset="utf-8" />
+	<link href="style.css" rel="stylesheet" />
+</head>
 
-Methodology - Describe your methodology pen testing the application, including the tools that you used
+<body>
+	<h1>Assignment 4: Lena Chang</h1>
 
+	<h2>Introduction</h2>
+	<p>I have been tasked to find 3 security and privacy problems in Ming's Assignment 3 for Comp20. Assignment 3 is modeled on the game 2048; after finishing the game, users input and submit their username. Once submitting, the user's name, score, grid, and date are all inputted into a database to be displayed on a highscores page.</p>
 
-Abstract of Findings - Provide an overview of all the security and privacy issues you identified. This section should be written for non-technical managers who do not have technical expertise and do not have time to read the entire document. Write this section using lay language.
+	<h2>Methodology</h2>
+	<p>To test this application, I began by initially performing attacks without reading the source code, aka 'black box' testing. In my terminal, I used: </br> 
+		'curl --data "username=someName&score=someScore&grid={}" https://gameserver2048.herokuapp.com/submit' </br>
+	to start playing around with the types of data I could post to the database.</p>
+	<p>After 'black box' testing, I started looking at the application source code. I wanted to make sure that I understood the methods in which the posting and getting of data worked.</p>
 
+	<h2>Abstract of Findings</h2>
+	<p>I found the following three security/privacy issues in this assignment:</p>
+	<ol>
+		<li>All of the data being stored in the database can be revealed to the user. This includes all usernames, scores, grids, and time of game completion. This poses as an issue because all private information can be made public.</li>
+		<li>Malicious code can be inputted when a user enters their username into the system. This code can create random popups on the page or redirect users to another site that may try to obtain personal information from the user.</li>
+		<li>The exact same data entry can repeatedly be submitted to the database, causing an overwhelming number of submissions that will cause the application to dramatically slow down and eventually crash.</li>
+	</ol>
 
-Issues Found - For each issue that you find, document:
-	
-	Issue (e.g., database injection, really bad programming practice)
+	<h2>Issues Found</h2>
+	<h3>Issue 1</h3>
+	<p>Injection in MongoDB</p>
+	<ul>
+		<li><h4>Location</h4>
+			<p>This issue occurs during the querying of scores (supposedly) based off of a known username in the database.</p>
+		</li>
+		<li><h4>Severity of Issue</h4>
+			<p>This is a high severity issue. With this type of injection attack, all information within the database is revealed to the user; the user will be able to obtain more info than they should be allowed to view. If any private information were stored in the database, then anyone could obtain this information.</p>
+		</li>
+		<li><h4>Description of Issue</h4>
+			<p>I found this issue when playing around with the /scores.json page of Assignment 3. In the URL, I changed the query such that the entire URl read: </br>
+				https://gameserver2048.herokuapp.com/scores.json?username[$ne]=batman</br>
+			'$ne' is also known as the 'not equals' operator, allowing for the request to return all data without knowing a specific username to lookup.</p>
+			<p>This issue occurs because there is no sanitizing/cleaning of the query string before it executes the response.</p>
+			<img id='screenshot' src='injection_issue.png' alt='injection code'>
+		</li>
+		<li><h4>Proof of Vulnerability</h4>
+			<p>Here's a screenshot:</p>
+			<img id='screenshot' src='injection.jpg' alt='injection attack'>
+			<p>As you can see, all data (at the time) in the database was displayed with this '$ne' injection attack. I should not have been able to view data from usernames that I did not know.</p>
+		</li>
+		<li><h4>Resolution</h4>
+			<p>To avoid this type of injection attack, there should be some cleaning of the query request before it executes the response.</p>
+		</li>
+	</ul>
 
-	Location or page where issue was found
+	<h3>Issue 2</h3>
+	<p>Cross-Site Scripting (XSS)</p>
+	<ul>
+		<li><h4>Location</h4>
+			<p>This issue occurs during the submission of data into the database. More specifically, this occurs when users submit their username to the system after completing the 2048 game.</p>
+		</li>
+		<li><h4>Severity of Issue</h4>
+			<p>This is a high severity issue. With cross-site scripting, users are vulnerable to page redirects to malicious sites that can execute various scripts that may take user information. In addition to page redirects, cross-site scripting can execute unwanted other unwanted scripts that may exploit the end user.</p>
+		</li>
+		<li><h4>Description of Issue</h4>
+			<p>I found this issue when playing around with the submission of new user data (inputting the username along with the score and grid). I used the following two commands (without spaces before 'script') to hack the site:</br>
+				<ul>
+					<li>curl --data "username=< script>alert('hAcKeD')</ script>&score=5&grid={}" https://gameserver2048.herokuapp.com/submit</li>
+					<li>curl --data "username=< script>window.location.replace("https://twitter.com/0xmchow?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor")</ script>&score=5&grid={}" https://gameserver2048.herokuapp.com/submit</li>
+				</ul></br>
+			The scripting in the username allowed me to send alerts to the scores page, as well as redirect the user to Ming's twitter account such that no one could access the scores page until the database was cleared. This issue occured because there was so security check or cleaning on the user-input (request.body.username). It is important to never trust the user!!
+			</p>
+			<img id='screenshot' src='xss_issue.png' alt='XSS Code Issues'>
+		</li>
+		<li><h4>Proof of Vulnerability</h4>
+			<p>After submitting the curl post request with an alert script, here is what occured after going to the address https://gameserver2048.herokuapp.com/ :</p>
+			<img id='screenshot' src='xss_alert.png' alt='XSS Alert'> </br>
+			<p>Conversely, after submitting the curl post request with the window.location script, here is what occured after going to the address https://gameserver2048.herokuapp.com/ :</p>
+			<img id='screenshot' src='xss_redirect.png' alt='XSS Redirect'>
+			<p>In this case with the page redirect, all of the '%' in the URL I submitted were replaced with "^", thus Ming's twitter page was unable to correctly load.</p>
+		</li>
+		<li><h4>Resolution</h4>
+			<p>To avoid XSS, you should clean and validate all user input before inserting the information into the database/page. This can be done by stripping special characters from all inputs before storing them in the database or page. For example, you could remove '/', '\', '<', '>', '%', '&', ' " ', etc. from the input string.</p>
+		</li>
+	</ul>
 
-	Severity of issue (e.g., low, medium , or high). Justify your answer.
+	<h3>Issue 3</h3>
+	<p></p>
+		<ul>
+		<li><h4>Location</h4>
+			<p></p>
+		</li>
+		<li><h4>Severity of Issue</h4>
+			<p></p>
+		</li>
+		<li><h4>Description of Issue</h4>
+			<p></p>
+		</li>
+		<li><h4>Proof of Vulnerability</h4>
+			<p></p>
+		</li>
+		<li><h4>Resolution</h4>
+			<p></p>
+		</li>
+	</ul>
 
-	Description of issue. How did you find it? A screenshot of problem is excellent.
+	<h2>Conclusion</h2>
+	<p></p>
 
-	Proof of vulnerability. Show pictures or it didn't happen.
+	<h2>References</h2>
+	<ul>
+		<li>https://apple.stackexchange.com/questions/235128/how-do-i-run-a-sh-or-command-file-in-terminal</li>
+		<li>https://stackoverflow.com/questions/47913341/shell-echo-some-command-curl-vs-type-the-command-in-the-terminal</li>
+		<li>https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)</li>
+		<li>https://zanon.io/posts/nosql-injection-in-mongodb</li>
+		<li>https://www.owasp.org/index.php/Top_10_2013-A1-Injection</li>
+		<li>https://www.veracode.com/security/xss</li>
+	</ul>
+</body>
 
-	Resolution. Make recommendation(s) on how issue can be resolved. Show code if possible.
-
-
-Conclusion - You can also list future considerations and recommendations with costs.
-
-
-References - A list of references and links that you used for your work.
+</html>
